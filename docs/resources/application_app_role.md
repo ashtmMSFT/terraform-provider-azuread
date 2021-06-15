@@ -4,9 +4,7 @@ subcategory: "Applications"
 
 # Resource: azuread_application_app_role
 
-Manages an App Role associated with an Application within Azure Active Directory.
-
--> **NOTE:** If you're authenticating using a Service Principal then it must have permissions to both `Read and write all applications` and `Sign in and read user profile` within the `Windows Azure Active Directory` API.
+Manages an app role associated with an application within Azure Active Directory.
 
 ## Example Usage
 
@@ -45,7 +43,7 @@ In addition to all arguments above, the following attributes are exported:
 
 ## Import
 
-App Roles can be imported using the `object_id` of an Application and the `id` of the App Role, e.g.
+App roles can be imported using the object ID of the associated application and the ID of the app role, e.g.
 
 ```shell
 terraform import azuread_application_app_role.test 00000000-0000-0000-0000-000000000000/role/11111111-1111-1111-1111-111111111111

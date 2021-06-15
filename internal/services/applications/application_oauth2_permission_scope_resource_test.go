@@ -6,14 +6,14 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/hashicorp/terraform-provider-azuread/internal/services/applications"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
 	"github.com/hashicorp/terraform-provider-azuread/internal/acceptance"
 	"github.com/hashicorp/terraform-provider-azuread/internal/acceptance/check"
 	"github.com/hashicorp/terraform-provider-azuread/internal/clients"
-	"github.com/hashicorp/terraform-provider-azuread/internal/helpers/aadgraph"
-	"github.com/hashicorp/terraform-provider-azuread/internal/helpers/msgraph"
 	"github.com/hashicorp/terraform-provider-azuread/internal/services/applications/parse"
 	"github.com/hashicorp/terraform-provider-azuread/internal/utils"
 )
@@ -46,38 +46,6 @@ func TestAccApplicationOAuth2PermissionScope_complete(t *testing.T) {
 			Check: resource.ComposeTestCheckFunc(
 				check.That(data.ResourceName).ExistsInAzure(r),
 				check.That(data.ResourceName).Key("scope_id").Exists(),
-			),
-		},
-		data.ImportStep(),
-	})
-}
-
-func TestAccApplicationOAuth2PermissionScope_basicDeprecated(t *testing.T) {
-	data := acceptance.BuildTestData(t, "azuread_application_oauth2_permission", "test")
-	r := ApplicationOAuth2PermissionResource{}
-
-	data.ResourceTest(t, r, []resource.TestStep{
-		{
-			Config: r.basicDeprecated(data),
-			Check: resource.ComposeTestCheckFunc(
-				check.That(data.ResourceName).ExistsInAzure(r),
-				check.That(data.ResourceName).Key("permission_id").Exists(),
-			),
-		},
-		data.ImportStep(),
-	})
-}
-
-func TestAccApplicationOAuth2PermissionScope_completeDeprecated(t *testing.T) {
-	data := acceptance.BuildTestData(t, "azuread_application_oauth2_permission", "test")
-	r := ApplicationOAuth2PermissionResource{}
-
-	data.ResourceTest(t, r, []resource.TestStep{
-		{
-			Config: r.completeDeprecated(data),
-			Check: resource.ComposeTestCheckFunc(
-				check.That(data.ResourceName).ExistsInAzure(r),
-				check.That(data.ResourceName).Key("permission_id").Exists(),
 			),
 		},
 		data.ImportStep(),
@@ -132,41 +100,27 @@ func TestAccApplicationOAuth2PermissionScope_requiresImport(t *testing.T) {
 }
 
 func (r ApplicationOAuth2PermissionResource) Exists(ctx context.Context, clients *clients.Client, state *terraform.InstanceState) (*bool, error) {
+	client := clients.Applications.ApplicationsClient
+	client.BaseClient.DisableRetries = true
+
 	id, err := parse.OAuth2PermissionScopeID(state.ID)
 	if err != nil {
 		return nil, fmt.Errorf("parsing OAuth2 Permission ID: %v", err)
 	}
 
-	if clients.EnableMsGraphBeta {
-		app, status, err := clients.Applications.MsClient.Get(ctx, id.ObjectId)
-		if err != nil {
-			if status == http.StatusNotFound {
-				return nil, fmt.Errorf("Application with object ID %q does not exist", id.ObjectId)
-			}
-			return nil, fmt.Errorf("failed to retrieve Application with object ID %q: %+v", id.ObjectId, err)
+	app, status, err := client.Get(ctx, id.ObjectId)
+	if err != nil {
+		if status == http.StatusNotFound {
+			return nil, fmt.Errorf("Application with object ID %q does not exist", id.ObjectId)
 		}
+		return nil, fmt.Errorf("failed to retrieve Application with object ID %q: %+v", id.ObjectId, err)
+	}
 
-		role, err := msgraph.OAuth2PermissionFindById(app, id.ScopeId)
-		if err != nil {
-			return nil, fmt.Errorf("failed to identity OAuth2 Permission: %s", err)
-		} else if role != nil {
-			return utils.Bool(true), nil
-		}
-	} else {
-		resp, err := clients.Applications.AadClient.Get(ctx, id.ObjectId)
-		if err != nil {
-			if utils.ResponseWasNotFound(resp.Response) {
-				return nil, fmt.Errorf("Application with object ID %q does not exist", id.ObjectId)
-			}
-			return nil, fmt.Errorf("failed to retrieve Application with object ID %q: %+v", id.ObjectId, err)
-		}
-
-		scope, err := aadgraph.OAuth2PermissionFindById(resp, id.ScopeId)
-		if err != nil {
-			return nil, fmt.Errorf("failed to identity OAuth2 Permission: %s", err)
-		} else if scope != nil {
-			return utils.Bool(true), nil
-		}
+	role, err := applications.ApplicationFindOAuth2PermissionScope(app, id.ScopeId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to identity OAuth2 Permission: %s", err)
+	} else if role != nil {
+		return utils.Bool(true), nil
 	}
 
 	return nil, fmt.Errorf("OAuth2 Permission %q was not found in Application %q", id.ScopeId, id.ObjectId)
@@ -175,7 +129,10 @@ func (r ApplicationOAuth2PermissionResource) Exists(ctx context.Context, clients
 func (ApplicationOAuth2PermissionResource) template(data acceptance.TestData) string {
 	return fmt.Sprintf(`
 resource "azuread_application" "test" {
-  name = "acctestApp-%[1]d"
+  display_name = "acctestApp-%[1]d"
+  lifecycle {
+    ignore_changes = [api]
+  }
 }
 `, data.RandomInteger)
 }
@@ -207,41 +164,6 @@ resource "azuread_application_oauth2_permission_scope" "test" {
   admin_consent_display_name = "Administer"
   enabled                    = true
   scope_id                   = "%[2]s"
-  type                       = "Admin"
-  user_consent_description   = "Administer the application"
-  user_consent_display_name  = "Administer"
-  value                      = "administer"
-}
-`, r.template(data), data.RandomID)
-}
-
-func (r ApplicationOAuth2PermissionResource) basicDeprecated(data acceptance.TestData) string {
-	return fmt.Sprintf(`
-%[1]s
-
-resource "azuread_application_oauth2_permission" "test" {
-  application_object_id      = azuread_application.test.id
-  admin_consent_description  = "Administer the application"
-  admin_consent_display_name = "Administer"
-  is_enabled                 = true
-  type                       = "Admin"
-  user_consent_description   = "Administer the application"
-  user_consent_display_name  = "Administer"
-  value                      = "administer"
-}
-`, r.template(data))
-}
-
-func (r ApplicationOAuth2PermissionResource) completeDeprecated(data acceptance.TestData) string {
-	return fmt.Sprintf(`
-%[1]s
-
-resource "azuread_application_oauth2_permission" "test" {
-  application_object_id      = azuread_application.test.id
-  admin_consent_description  = "Administer the application"
-  admin_consent_display_name = "Administer"
-  is_enabled                 = true
-  permission_id              = "%[2]s"
   type                       = "Admin"
   user_consent_description   = "Administer the application"
   user_consent_display_name  = "Administer"
