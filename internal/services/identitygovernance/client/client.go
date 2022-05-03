@@ -7,21 +7,27 @@ import (
 )
 
 type Client struct {
-	AccessPackageClient                  *msgraph.AccessPackageClient
+	AccessPackageAssignmentPolicyClient  *msgraph.AccessPackageAssignmentPolicyClient
 	AccessPackageCatalogClient           *msgraph.AccessPackageCatalogClient
+	AccessPackageClient                  *msgraph.AccessPackageClient
+	AccessPackageResourceClient          *msgraph.AccessPackageResourceClient
 	AccessPackageResourceRequestClient   *msgraph.AccessPackageResourceRequestClient
 	AccessPackageResourceRoleScopeClient *msgraph.AccessPackageResourceRoleScopeClient
-	AccessPackageAssignmentPolicyClient  *msgraph.AccessPackageAssignmentPolicyClient
-	AccessPackageResourceClient          *msgraph.AccessPackageResourceClient
 }
 
 func NewClient(o *common.ClientOptions) *Client {
 	// Note this must be beta for now as stable does not exist
-	accessPackageClient := msgraph.NewAccessPackageClient(o.TenantID)
-	o.ConfigureClient(&accessPackageClient.BaseClient)
+	accessPackageAssignmentPolicyClient := msgraph.NewAccessPackageAssignmentPolicyClient(o.TenantID)
+	o.ConfigureClient(&accessPackageAssignmentPolicyClient.BaseClient)
 
 	accessPackageCatalogClient := msgraph.NewAccessPackageCatalogClient(o.TenantID)
 	o.ConfigureClient(&accessPackageCatalogClient.BaseClient)
+
+	accessPackageClient := msgraph.NewAccessPackageClient(o.TenantID)
+	o.ConfigureClient(&accessPackageClient.BaseClient)
+
+	accessPackageResourceClient := msgraph.NewAccessPackageResourceClient(o.TenantID)
+	o.ConfigureClient(&accessPackageResourceClient.BaseClient)
 
 	accessPackageResourceRequestClient := msgraph.NewAccessPackageResourceRequestClient(o.TenantID)
 	o.ConfigureClient(&accessPackageResourceRequestClient.BaseClient)
@@ -29,18 +35,12 @@ func NewClient(o *common.ClientOptions) *Client {
 	accessPackageResourceRoleScopeClient := msgraph.NewAccessPackageResourceRoleScopeClient(o.TenantID)
 	o.ConfigureClient(&accessPackageResourceRoleScopeClient.BaseClient)
 
-	accessPackageAssignmentPolicyClient := msgraph.NewAccessPackageAssignmentPolicyClient(o.TenantID)
-	o.ConfigureClient(&accessPackageAssignmentPolicyClient.BaseClient)
-
-	accessPackageResourceClient := msgraph.NewAccessPackageResourceClient(o.TenantID)
-	o.ConfigureClient(&accessPackageResourceClient.BaseClient)
-
 	return &Client{
-		AccessPackageClient:                  accessPackageClient,
+		AccessPackageAssignmentPolicyClient:  accessPackageAssignmentPolicyClient,
 		AccessPackageCatalogClient:           accessPackageCatalogClient,
+		AccessPackageClient:                  accessPackageClient,
+		AccessPackageResourceClient:          accessPackageResourceClient,
 		AccessPackageResourceRequestClient:   accessPackageResourceRequestClient,
 		AccessPackageResourceRoleScopeClient: accessPackageResourceRoleScopeClient,
-		AccessPackageAssignmentPolicyClient:  accessPackageAssignmentPolicyClient,
-		AccessPackageResourceClient:          accessPackageResourceClient,
 	}
 }
