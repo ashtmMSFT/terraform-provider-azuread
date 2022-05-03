@@ -3,11 +3,11 @@ package identitygovernance_test
 import (
 	"context"
 	"fmt"
-	"net/http"
-	"testing"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/manicminer/hamilton/odata"
+	"net/http"
+	"testing"
 
 	"github.com/hashicorp/terraform-provider-azuread/internal/acceptance"
 	"github.com/hashicorp/terraform-provider-azuread/internal/acceptance/check"

@@ -14,10 +14,10 @@ import (
 	applications "github.com/hashicorp/terraform-provider-azuread/internal/services/applications/client"
 	approleassignments "github.com/hashicorp/terraform-provider-azuread/internal/services/approleassignments/client"
 	conditionalaccess "github.com/hashicorp/terraform-provider-azuread/internal/services/conditionalaccess/client"
-	identitygovernance "github.com/hashicorp/terraform-provider-azuread/internal/services/identitygovernance/client"
 	directoryroles "github.com/hashicorp/terraform-provider-azuread/internal/services/directoryroles/client"
 	domains "github.com/hashicorp/terraform-provider-azuread/internal/services/domains/client"
 	groups "github.com/hashicorp/terraform-provider-azuread/internal/services/groups/client"
+	identitygovernance "github.com/hashicorp/terraform-provider-azuread/internal/services/identitygovernance/client"
 	invitations "github.com/hashicorp/terraform-provider-azuread/internal/services/invitations/client"
 	serviceprincipals "github.com/hashicorp/terraform-provider-azuread/internal/services/serviceprincipals/client"
 	users "github.com/hashicorp/terraform-provider-azuread/internal/services/users/client"
@@ -41,7 +41,7 @@ type Client struct {
 	DirectoryRoles      *directoryroles.Client
 	Domains             *domains.Client
 	Groups              *groups.Client
-	IdentityGovernance *identitygovernance.Client
+	IdentityGovernance  *identitygovernance.Client
 	Invitations         *invitations.Client
 	ServicePrincipals   *serviceprincipals.Client
 	Users               *users.Client

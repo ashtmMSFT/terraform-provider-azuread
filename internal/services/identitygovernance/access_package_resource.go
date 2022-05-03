@@ -51,9 +51,9 @@ func accessPackageResource() *schema.Resource {
 			},
 
 			"description": {
-				Description:      "Description of the accessPackage",
-				Type:             schema.TypeString,
-				Optional:         true,
+				Description:  "Description of the accessPackage",
+				Type:         schema.TypeString,
+				Optional:     true,
 				ValidateFunc: validation.StringIsNotEmpty,
 			},
 
@@ -65,9 +65,9 @@ func accessPackageResource() *schema.Resource {
 
 			"is_hidden": {
 				Description: "Sets if the access package hidden",
-				Type:     schema.TypeBool,
-				Default: false,
-				Optional: true,
+				Type:        schema.TypeBool,
+				Default:     false,
+				Optional:    true,
 			},
 		},
 	}
@@ -77,12 +77,12 @@ func accessPackageResourceCreate(ctx context.Context, d *schema.ResourceData, me
 	client := meta.(*clients.Client).IdentityGovernance.AccessPackageClient
 
 	properties := msgraph.AccessPackage{
-		Catalog:     &msgraph.AccessPackageCatalog{
+		Catalog: &msgraph.AccessPackageCatalog{
 			ID: utils.String(d.Get("catalog_id").(string)),
 		},
-		Description:           utils.String(d.Get("description").(string)),
-		DisplayName:  utils.String(d.Get("display_name").(string)),
-		IsHidden:   utils.Bool(d.Get("is_hidden").(bool)),
+		Description: utils.String(d.Get("description").(string)),
+		DisplayName: utils.String(d.Get("display_name").(string)),
+		IsHidden:    utils.Bool(d.Get("is_hidden").(bool)),
 	}
 
 	accessPackage, _, err := client.Create(ctx, properties)
@@ -103,11 +103,11 @@ func accessPackageResourceUpdate(ctx context.Context, d *schema.ResourceData, me
 	client := meta.(*clients.Client).IdentityGovernance.AccessPackageClient
 
 	properties := msgraph.AccessPackage{
-		ID:              utils.String(d.Id()),
-		CatalogId:     utils.String(d.Get("catalog_id").(string)),
-		Description:           utils.String(d.Get("description").(string)),
-		DisplayName:  utils.String(d.Get("display_name").(string)),
-		IsHidden:   utils.Bool(d.Get("is_hidden").(bool)),
+		ID:          utils.String(d.Id()),
+		CatalogId:   utils.String(d.Get("catalog_id").(string)),
+		Description: utils.String(d.Get("description").(string)),
+		DisplayName: utils.String(d.Get("display_name").(string)),
+		IsHidden:    utils.Bool(d.Get("is_hidden").(bool)),
 	}
 
 	if _, err := client.Update(ctx, properties); err != nil {
@@ -158,4 +158,4 @@ func accessPackageResourceDelete(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	return nil
-}	
+}

@@ -7,12 +7,12 @@ import (
 )
 
 type Client struct {
-	AccessPackageClient *msgraph.AccessPackageClient
-	AccessPackageCatalogClient *msgraph.AccessPackageCatalogClient
-	AccessPackageResourceRequestClient *msgraph.AccessPackageResourceRequestClient
+	AccessPackageClient                  *msgraph.AccessPackageClient
+	AccessPackageCatalogClient           *msgraph.AccessPackageCatalogClient
+	AccessPackageResourceRequestClient   *msgraph.AccessPackageResourceRequestClient
 	AccessPackageResourceRoleScopeClient *msgraph.AccessPackageResourceRoleScopeClient
-	AccessPackageAssignmentPolicyClient *msgraph.AccessPackageAssignmentPolicyClient
-	AccessPackageResourceClient *msgraph.AccessPackageResourceClient
+	AccessPackageAssignmentPolicyClient  *msgraph.AccessPackageAssignmentPolicyClient
+	AccessPackageResourceClient          *msgraph.AccessPackageResourceClient
 }
 
 func NewClient(o *common.ClientOptions) *Client {
@@ -36,11 +36,11 @@ func NewClient(o *common.ClientOptions) *Client {
 	o.ConfigureClient(&accessPackageResourceClient.BaseClient)
 
 	return &Client{
-		AccessPackageClient: accessPackageClient,
-		AccessPackageCatalogClient: accessPackageCatalogClient,
-		AccessPackageResourceRequestClient: accessPackageResourceRequestClient,
+		AccessPackageClient:                  accessPackageClient,
+		AccessPackageCatalogClient:           accessPackageCatalogClient,
+		AccessPackageResourceRequestClient:   accessPackageResourceRequestClient,
 		AccessPackageResourceRoleScopeClient: accessPackageResourceRoleScopeClient,
-		AccessPackageAssignmentPolicyClient: accessPackageAssignmentPolicyClient,
-		AccessPackageResourceClient: accessPackageResourceClient,
+		AccessPackageAssignmentPolicyClient:  accessPackageAssignmentPolicyClient,
+		AccessPackageResourceClient:          accessPackageResourceClient,
 	}
 }
