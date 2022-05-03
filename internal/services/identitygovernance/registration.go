@@ -26,9 +26,10 @@ func (r Registration) SupportedDataSources() map[string]*schema.Resource {
 // SupportedResources returns the supported Resources supported by this Service
 func (r Registration) SupportedResources() map[string]*schema.Resource {
 	return map[string]*schema.Resource{
-		"azuread_access_package_catalog": accessPackageCatalogResource(),
-		//"azuread_access_package_resource_request": accessPackageResourceRequestResource(),
 		"azuread_access_package":                   accessPackageResource(),
 		"azuread_access_package_assignment_policy": accessPackageAssignmentPolicyResource(),
+		"azuread_access_package_catalog":           accessPackageCatalogResource(),
+		// "azuread_access_package_resource":          accessPackageResourceResource(),
+		"azuread_access_package_resource_request": accessPackageResourceRequestResource(),
 	}
 }
